@@ -1,0 +1,15 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Default preset for use with EnchantedGrass's repos",
+  "extends": [
+    "config:base"
+  ],
+  "timezone": "Asia/Ho_Chi_Minh",
+  "prHourlyLimit": 4,
+  "schedule": [
+    "before 8pm on Sun"
+  ],
+  "labels": [
+    "type: dependencies"
+  ]
+}
