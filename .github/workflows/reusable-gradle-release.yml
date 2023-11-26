@@ -91,3 +91,29 @@ jobs:
       upload-artifacts: true
       artifact-name: ${{ inputs.artifact-name }}
       artifacts-path: ${{ inputs.artifacts-path }}
+
+  release:
+    needs: [ check, call-build ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@v3.0.2
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: release-artifacts
+
+      - name: Generate release notes
+        run: ./.github/workflow-scripts/generate-release-notes.sh
+
+      - name: Create release
+        run: gh release create ${{ needs.check.outputs.next-tag }} release-artifacts/* -F RELEASE_NOTES.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
