@@ -1,0 +1,60 @@
+name: Gradle Release
+on:
+  workflow_call:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      should-release: ${{ steps.check-release.outputs.should-release }}
+      # Version format: YY.0M.0D_MICRO
+      next-tag: ${{ steps.get-next-tag.outputs.next-tag }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+
+      - name: Get latest tag
+        id: get-tag
+        run: |
+          LATEST_TAG=$(git describe --abbrev=0 --tags 2>/dev/null || echo "v0.0.0_0")
+          echo "latest-tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Check if release should be created
+        id: check-release
+        run: |
+          COMMIT_MESSAGES=$(git log --format=%s "${LATEST_TAG}"..HEAD 2>/dev/null || git log --format=%s)
+          IFS=$'\n'
+          for msg in $COMMIT_MESSAGES; do
+            if [[ $msg == feat* ]] || [[ $msg == fix* ]] || [[ $msg == refactor!* ]]; then
+              echo "should-release=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+
+      - name: Get next tag
+        id: get-next-tag
+        if: steps.check-release.outputs.should-release == 'true'
+        env:
+          LATEST_TAG: ${{ steps.get-tag.outputs.latest-tag }}
+
+        run: |
+          LATEST_TAG=${LATEST_TAG:1}
+          
+          IFS='._' read -r -a SEGMENTS <<< "$LATEST_TAG"
+          YEAR=${SEGMENTS[0]}
+          MONTH=${SEGMENTS[1]}
+          DAY=${SEGMENTS[2]}
+          MICRO=${SEGMENTS[3]}
+          
+          CURRENT_DATE=$(date +%y.%m.%d)
+          if [[ $CURRENT_DATE == $YEAR.$MONTH.$DAY ]]; then
+            MICRO=$((MICRO + 1))
+          else
+            MICRO=0
+          fi
+          
+          NEXT_TAG="v$CURRENT_DATE""_""$MICRO"
+          echo "next-tag=$NEXT_TAG" >> "$GITHUB_OUTPUT"
