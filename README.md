@@ -41,5 +41,4 @@ release:
     build-args: build # optional, defaults to "build"
     artifact-name: my-artifact # optional, defaults to "release-artifact"
     artifacts-path: build/libs # optional, defaults to "build/libs/*.jar"
-  ```
 ```
