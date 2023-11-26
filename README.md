@@ -26,3 +26,20 @@ build:
     artifact-name: my-artifact # optional, defaults to "build-artifact"
     artifacts-path: build/libs # optional, defaults to "build/libs/*.jar"
 ```
+
+### [`reusable-gradle-release`](./.github/workflows/reusable-gradle-release.yml)
+
+This workflow is designed to be used with Gradle projects.
+It will check the repository should be released,
+and if so, it will build the project and upload the build artifacts as release assets.
+
+```yaml
+release:
+  uses: EnchantedGrass/.github/.github/workflows/reusable-gradle-release.yml@main
+  with:
+    java-version: 17 # optional, defaults to 17
+    build-args: build # optional, defaults to "build"
+    artifact-name: my-artifact # optional, defaults to "release-artifact"
+    artifacts-path: build/libs # optional, defaults to "build/libs/*.jar"
+  ```
+```
