@@ -1,6 +1,26 @@
 name: Gradle Release
 on:
   workflow_call:
+    inputs:
+      java-version:
+        required: false
+        type: string
+        default: "17"
+
+      build-args:
+        required: false
+        type: string
+        default: build
+
+      artifact-name:
+        required: false
+        type: string
+        default: release-artifacts
+
+      artifacts-path:
+        required: false
+        type: string
+        default: build/libs/*.jar
 
 jobs:
   check:
@@ -58,3 +78,16 @@ jobs:
           
           NEXT_TAG="v$CURRENT_DATE""_""$MICRO"
           echo "next-tag=$NEXT_TAG" >> "$GITHUB_OUTPUT"
+
+  call-build:
+    needs: check
+    if: needs.check.outputs.should-release == 'true'
+    uses: ./.github/workflows/reusable-gradle-build.yml
+    with:
+      java-version: ${{ inputs.java-version }}
+      cache-read-only: true
+      build-version: ${{ needs.check.outputs.next-tag }}
+      build-args: ${{ inputs.build-args }}
+      upload-artifacts: true
+      artifact-name: ${{ inputs.artifact-name }}
+      artifacts-path: ${{ inputs.artifacts-path }}
