@@ -7,6 +7,16 @@ on:
         type: string
         default: "17"
 
+      cache-read-only:
+        required: false
+        type: boolean
+        default: ${{ github.event.repository != null && github.ref_name != github.event.repository.default_branch }}
+
+      build-version:
+        description: The version pass to environment variable BUILD_VERSION. Defaults to b.<timestamp>
+        required: false
+        type: string
+
       build-args:
         required: false
         type: string
@@ -16,11 +26,6 @@ on:
         required: false
         type: boolean
         default: true
-
-      cache-read-only:
-        required: false
-        type: boolean
-        default: ${{ github.event.repository != null && github.ref_name != github.event.repository.default_branch }}
 
 jobs:
   build:
@@ -55,8 +60,21 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Calculate build version
+        id: build-version
+        run: |
+          VERSION=${{ inputs.build-version }}
+          if [ -z "$VERSION" ]; then
+            VERSION="b.$(date +%s)"
+          elif [[ $VERSION == v* ]]; then
+            VERSION=${VERSION:1}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Build with Gradle
         run: ./gradlew ${{ inputs.build-args }}
+        env:
+          BUILD_VERSION: ${{ steps.build-version.outputs.version }}
 
       - name: Upload build artifacts
         if: ${{ inputs.upload-artifacts }}
