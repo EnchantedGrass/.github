@@ -126,7 +126,8 @@ jobs:
       - name: Generate release notes
         run:
           ls -la
-          chmod +x generate-release-notes.sh && ./generate-release-notes.sh
+          chmod +x generate-release-notes.sh
+          ./generate-release-notes.sh
 
       - name: Create release
         run: gh release create ${{ needs.check.outputs.next-tag }} release-artifacts/* -F RELEASE_NOTES.md
