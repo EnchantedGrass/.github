@@ -120,8 +120,13 @@ jobs:
           name: ${{ inputs.artifact-name }}
           path: release-artifacts
 
+      - name: Download generate release notes
+        run: wget https://raw.githubusercontent.com/EnchantedGrass/.github/main/.github/workflow-scripts/generate-release-notes.sh
+
       - name: Generate release notes
-        run: ./.github/workflow-scripts/generate-release-notes.sh
+        run:
+          chmod +x generate-release-notes.sh
+          ./generate-release-notes.sh
 
       - name: Create release
         run: gh release create ${{ needs.check.outputs.next-tag }} release-artifacts/* -F RELEASE_NOTES.md
