@@ -130,6 +130,8 @@ jobs:
 
       - name: Create release
         run: |
+          echo $(pwd)
+          ls -la
           cat RELEASE_NOTES.md
           gh release create ${{ needs.check.outputs.next-tag }} release-artifacts/* -F RELEASE_NOTES.md
 
