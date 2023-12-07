@@ -33,7 +33,9 @@ declare -A RELEASE_NOTES=(
 )
 
 LAST_TAG=$(git describe --abbrev=0 --tags 2>/dev/null || echo "v0.0.0_0")
-COMMIT_MESSAGES=$(git log --format="%s (#%h)" "${LAST_TAG}"..HEAD 2>/dev/null || git log --format="%s (#%h)")
+GITHUB_REPO=$(git config --get remote.origin.url | sed -e 's/.*github.com[:/]\(.*\)\.git/\1/')
+GITHUB_REPO_COMMIT_URL="https://github.com/${GITHUB_REPO}/commit/"
+COMMIT_MESSAGES=$(git log --format="%s (#%h)" "${LAST_TAG}"..HEAD 2>/dev/null || git log --format="%s ([%h](${GITHUB_REPO_COMMIT_URL}%h)")
 IFS=$'\n'
 for MSG in ${COMMIT_MESSAGES}; do
   COMMIT_TYPE=$(echo "${MSG}" | cut -d':' -f1 | xargs)
