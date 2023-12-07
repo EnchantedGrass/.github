@@ -54,6 +54,9 @@ jobs:
             fi
           done
 
+        env:
+          LATEST_TAG: ${{ steps.get-tag.outputs.latest-tag }}
+
       - name: Get next tag
         id: get-next-tag
         if: steps.check-release.outputs.should-release == 'true'
