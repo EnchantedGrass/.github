@@ -22,6 +22,15 @@ on:
         type: string
         default: build/libs/*.jar
 
+    outputs:
+      should-release:
+        type: boolean
+        value: ${{ jobs.check.outputs.should-release }}
+
+      release-tag:
+        type: string
+        value: ${{ jobs.check.outputs.next-tag }}
+
 jobs:
   check:
     runs-on: ubuntu-latest
