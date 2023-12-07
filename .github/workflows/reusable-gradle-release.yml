@@ -125,15 +125,11 @@ jobs:
 
       - name: Generate release notes
         run:
-          chmod +x generate-release-notes.sh
-          ./generate-release-notes.sh
+          ls -la
+          chmod +x generate-release-notes.sh && ./generate-release-notes.sh
 
       - name: Create release
-        run: |
-          echo $(pwd)
-          ls -la
-          cat RELEASE_NOTES.md
-          gh release create ${{ needs.check.outputs.next-tag }} release-artifacts/* -F RELEASE_NOTES.md
+        run: gh release create ${{ needs.check.outputs.next-tag }} release-artifacts/* -F RELEASE_NOTES.md
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
