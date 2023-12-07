@@ -129,6 +129,9 @@ jobs:
           ./generate-release-notes.sh
 
       - name: Create release
-        run: gh release create ${{ needs.check.outputs.next-tag }} release-artifacts/* -F RELEASE_NOTES.md
+        run: |
+          cat RELEASE_NOTES.md
+          gh release create ${{ needs.check.outputs.next-tag }} release-artifacts/* -F RELEASE_NOTES.md
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
