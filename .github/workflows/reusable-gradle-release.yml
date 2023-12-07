@@ -24,11 +24,9 @@ on:
 
     outputs:
       should-release:
-        type: boolean
         value: ${{ jobs.check.outputs.should-release }}
 
       release-tag:
-        type: string
         value: ${{ jobs.check.outputs.next-tag }}
 
 jobs:
